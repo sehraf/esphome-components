@@ -21,7 +21,7 @@
         along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ac101_component.h"
+#include "AC101.h"
 
 #include "esphome.h"
 #include "esphome/components/i2c/i2c.h"
@@ -87,7 +87,7 @@ namespace ac101 {
 
 static const char *const TAG = "AC101";
 
-bool AC101::WriteReg(uint8_t reg, uint16_t val) {
+bool AC101::WriteReg(uint8_t reg, uint16_t value) {
   std::array<uint8_t, 2> v = {uint8_t(value >> 8), uint8_t(value & 0xff)};
   return this->write_bytes(reg, v);
 }
