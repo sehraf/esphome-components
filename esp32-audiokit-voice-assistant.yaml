@@ -1,0 +1,114 @@
+substitutions:
+  friendly_name: ESP32 AudioKit - voice assistant
+  # Audiokit Buttons
+  KEY1: '36'
+  KEY2: '13' # may be in use for other purposes, see onboard config switch
+  KEY3: '19' # also activates LED D4 if pressed
+  KEY4: '23' # do not use on A1S V2.3 with initial pinout -> I2C ES8388
+  KEY5: '18' # do not use on A1S V2.3 with initial pinout -> I2C ES8388
+  KEY6: '5'  # do not use on A1S V2.3 with initial pinout -> I2S
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+esphome:
+  name: esp32-audiokit-voice-assistant
+
+  # # enable amplifier
+  # on_boot:
+  #   then:
+  #     - output.turn_on: gpio_amp
+
+external_components:
+  source:
+    type: git
+    url: https://github.com/sehraf/esphome-components
+    ref: main
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "..."
+
+ota:
+  password: "..."
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Esp32-Audiokit-Voice-Assistant"
+    password: "..."
+
+captive_portal:
+
+# buttons
+binary_sensor:
+  - platform: gpio
+    pin: 
+      number: ${KEY4}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: None
+    id: echo_button
+    on_press:
+      - voice_assistant.start:
+    on_release:
+      - voice_assistant.stop:
+    # on_click:
+    #   - media_player.toggle: media_out
+  - platform: gpio
+    pin: 
+      number: ${KEY5}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: None
+    on_click:
+      - media_player.play_media: http://listener3.mp3.tb-group.fm/hb.mp3
+
+# voice assistant
+voice_assistant:
+  microphone: mic_id
+
+# I2S Audio
+i2s_audio:
+  i2s_lrclk_pin: 26
+  i2s_bclk_pin: 27
+
+microphone:
+  - platform: i2s_audio
+    i2s_din_pin: 35
+    id: mic_id
+
+media_player:
+  - platform: i2s_audio
+    id: media_out
+    dac_type: external
+    i2s_dout_pin: 25
+    mode: stereo
+    on_play:
+      output.turn_on: gpio_amp
+    on_idle:
+      output.turn_off: gpio_amp
+
+# AC101 (I2C)
+i2c:
+  sda: 33
+  scl: 32
+  scan: true
+
+ac101:
+  # address: 0x1a
+
+# Amplifier
+output:
+  - platform: gpio
+    pin: 21
+    id: gpio_amp
