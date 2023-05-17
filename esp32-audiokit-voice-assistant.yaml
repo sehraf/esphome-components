@@ -16,10 +16,10 @@ esp32:
 esphome:
   name: esp32-audiokit-voice-assistant
 
-  # # enable amplifier
-  # on_boot:
-  #   then:
-  #     - output.turn_on: gpio_amp
+  # enable amplifier
+  on_boot:
+    then:
+      - output.turn_on: gpio_amp
 
 external_components:
   source:
@@ -93,10 +93,16 @@ media_player:
     dac_type: external
     i2s_dout_pin: 25
     mode: stereo
-    on_play:
-      output.turn_on: gpio_amp
-    on_idle:
-      output.turn_off: gpio_amp
+    # on_play:
+    #   output.turn_on: gpio_amp
+    # on_idle:
+    #   output.turn_off: gpio_amp
+
+speaker:
+  - platform: i2s_audio
+    dac_type: external
+    i2s_dout_pin: 25
+    mode: stereo
 
 # AC101 (I2C)
 i2c:
