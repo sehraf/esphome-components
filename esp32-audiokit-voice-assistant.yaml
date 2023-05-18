@@ -1,20 +1,19 @@
 substitutions:
   friendly_name: ESP32 AudioKit - voice assistant
   # Audiokit Buttons
-  KEY1: '36'
-  KEY2: '13' # may be in use for other purposes, see onboard config switch
-  KEY3: '19' # also activates LED D4 if pressed
-  KEY4: '23' # do not use on A1S V2.3 with initial pinout -> I2C ES8388
-  KEY5: '18' # do not use on A1S V2.3 with initial pinout -> I2C ES8388
-  KEY6: '5'  # do not use on A1S V2.3 with initial pinout -> I2S
+  KEY1: "36"
+  KEY2: "13" # may be in use for other purposes, see onboard config switch
+  KEY3: "19" # also activates LED D4 if pressed
+  KEY4: "23" # do not use on A1S V2.3 with initial pinout -> I2C ES8388
+  KEY5: "18" # do not use on A1S V2.3 with initial pinout -> I2C ES8388
+  KEY6: "5" # do not use on A1S V2.3 with initial pinout -> I2S
 
 esp32:
   board: esp32dev
-  framework:
-    type: arduino
 
 esphome:
   name: esp32-audiokit-voice-assistant
+  min_version: 2023.5.0
 
   # enable amplifier
   on_boot:
@@ -26,9 +25,11 @@ external_components:
     type: git
     url: https://github.com/sehraf/esphome-components
     ref: main
+  refresh: 1s
 
 # Enable logging
 logger:
+  level: VERBOSE
 
 # Enable Home Assistant API
 api:
@@ -52,30 +53,55 @@ captive_portal:
 # buttons
 binary_sensor:
   - platform: gpio
-    pin: 
+    pin:
+      number: ${KEY2}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: Volume Down
+    on_click:
+      - media_player.volume_down: media_out
+  - platform: gpio
+    pin:
+      number: ${KEY3}
+      inverted: true
+      mode: INPUT_PULLUP
+    name: Volume Up
+    on_click:
+      - media_player.volume_up: media_out
+  - platform: gpio
+    pin:
       number: ${KEY4}
       inverted: true
       mode: INPUT_PULLUP
-    name: None
+    name: Voice Assistant
     id: echo_button
     on_press:
       - voice_assistant.start:
     on_release:
       - voice_assistant.stop:
-    # on_click:
-    #   - media_player.toggle: media_out
+    on_click:
+      - media_player.toggle: media_out
   - platform: gpio
-    pin: 
+    pin:
       number: ${KEY5}
       inverted: true
       mode: INPUT_PULLUP
-    name: None
+    name: Web Radio
     on_click:
       - media_player.play_media: http://listener3.mp3.tb-group.fm/hb.mp3
 
 # voice assistant
 voice_assistant:
   microphone: mic_id
+  on_tts_end:
+    - speaker.play:
+        data: !lambda return x;
+        id: speaker_out
+  on_end:
+    - delay: 1s
+    - wait_until:
+        not:
+          speaker.is_playing: speaker_out
 
 # I2S Audio
 i2s_audio:
@@ -84,7 +110,9 @@ i2s_audio:
 
 microphone:
   - platform: i2s_audio
+    adc_type: external
     i2s_din_pin: 35
+    pdm: false
     id: mic_id
 
 media_player:
@@ -92,7 +120,7 @@ media_player:
     id: media_out
     dac_type: external
     i2s_dout_pin: 25
-    mode: stereo
+    mode: mono
     # on_play:
     #   output.turn_on: gpio_amp
     # on_idle:
@@ -100,9 +128,10 @@ media_player:
 
 speaker:
   - platform: i2s_audio
+    id: speaker_out
     dac_type: external
     i2s_dout_pin: 25
-    mode: stereo
+    mode: mono
 
 # AC101 (I2C)
 i2c:
