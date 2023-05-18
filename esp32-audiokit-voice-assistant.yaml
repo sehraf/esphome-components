@@ -94,14 +94,12 @@ binary_sensor:
 voice_assistant:
   microphone: mic_id
   on_tts_end:
-    - speaker.play:
-        data: !lambda return x;
-        id: speaker_out
+    - media_player.play_media: !lambda return x;
   on_end:
     - delay: 1s
     - wait_until:
         not:
-          speaker.is_playing: speaker_out
+          media_player.is_playing: media_out
 
 # I2S Audio
 i2s_audio:
@@ -118,6 +116,7 @@ microphone:
 media_player:
   - platform: i2s_audio
     id: media_out
+    name: Media Player
     dac_type: external
     i2s_dout_pin: 25
     mode: mono
