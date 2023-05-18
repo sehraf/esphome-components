@@ -88,15 +88,13 @@ namespace ac101 {
 static const char *const TAG = "AC101";
 
 bool AC101::WriteReg(uint8_t reg, uint16_t value) {
-  std::array<uint8_t, 2> v = {uint8_t(value >> 8), uint8_t(value & 0xff)};
-  return this->write_bytes(reg, v);
+  return this->write_bytes_16(reg, &value, 1);
 }
 
 uint16_t AC101::ReadReg(uint8_t reg) {
-  uint8_t a, b;
-  this->read_byte(reg, &a, false);
-  this->read_byte(reg, &b);
-  return uint16_t(a) << 8 | uint16_t(b);
+  uint16_t value;
+  this->read_bytes_16(reg, &value, 1);
+  return value;
 }
 
 void AC101::setup() {
@@ -141,7 +139,7 @@ void AC101::setup() {
   this->WriteReg(OMIXER_SR, 0x0081);
   this->WriteReg(OMIXER_DACA_CTRL, 0xf080);
 
-  ESP_LOGCONFIG(TAG, "Configuring ADC_DAC, volume=90%");
+  ESP_LOGCONFIG(TAG, "Configuring ADC_DAC, volume=90%%");
   this->SetMode(MODE_ADC_DAC);
   this->SetVolumeSpeaker(60);
   this->SetVolumeHeadphone(60);
