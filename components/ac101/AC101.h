@@ -95,13 +95,11 @@ public:
 
   void setup() override;
 
+  void dump_config() override;
+
   float get_setup_priority() const override { return setup_priority::LATE - 1; }
 
 protected:
-  // Initialize codec, using provided I2C pins and bus frequency.
-  // @return True on success, false on failure.
-  bool begin(int sda = -1, int scl = -1, uint32_t frequency = 400000);
-
   // Get speaker volume.
   // @return Speaker volume, [63..0] for [0..-43.5] [dB], in increments of 2.
   uint8_t GetVolumeSpeaker();

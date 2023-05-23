@@ -13,6 +13,7 @@ AC101 = ac101_ns.class_("AC101", cg.Component, i2c.I2CDevice)
 CONFIG_SCHEMA = (
     cv.Schema({cv.GenerateID(): cv.declare_id(AC101)})
     .extend(i2c.i2c_device_schema(0x1A))
+    .extend(cv.COMPONENT_SCHEMA)
 )
 
 
