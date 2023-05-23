@@ -85,10 +85,10 @@ void AC101::setup() {
   this->WriteReg(AC101_OMIXER_SR, 0x0081);
   this->WriteReg(AC101_OMIXER_DACA_CTRL, 0xf080);
 
-  ESP_LOGCONFIG(TAG, "Configuring ADC_DAC, volume=90%%");
+  ESP_LOGCONFIG(TAG, "Configuring ADC_DAC, volume=%i%%", 100);
   this->SetMode(MODE_ADC_DAC);
-  this->SetVolumeSpeaker(60);
-  this->SetVolumeHeadphone(60);
+  this->SetVolumeSpeaker(63);
+  this->SetVolumeHeadphone(63);
 }
 
 uint8_t AC101::GetVolumeSpeaker() {
@@ -191,7 +191,7 @@ void AC101::dump_config() {
   ESP_LOGCONFIG(TAG, "AC101 Audio Codec:");
 
   // assume that both outputs have an equal level
-  const int level = (int)(this->GetVolumeHeadphone() * 100.0 / 64.0);
+  const int level = (int)(this->GetVolumeHeadphone() * 100.0 / 63.0);
   ESP_LOGCONFIG(TAG, "  Volume: %i%%", level);
 
 #ifdef ESPHOME_LOG_HAS_VERBOSE

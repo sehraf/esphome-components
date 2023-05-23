@@ -1,12 +1,13 @@
 substitutions:
   friendly_name: ESP32 AudioKit - voice assistant
+
   # Audiokit Buttons
   KEY1: "36"
   KEY2: "13" # may be in use for other purposes, see onboard config switch
   KEY3: "19" # also activates LED D4 if pressed
   KEY4: "23" # do not use on A1S V2.3 with initial pinout -> I2C ES8388
   KEY5: "18" # do not use on A1S V2.3 with initial pinout -> I2C ES8388
-  KEY6: "5" # do not use on A1S V2.3 with initial pinout -> I2S
+  KEY6: "5"  # do not use on A1S V2.3 with initial pinout -> I2S
 
 esp32:
   board: esp32dev
@@ -29,7 +30,6 @@ external_components:
 
 # Enable logging
 logger:
-  level: VERBOSE
 
 # Enable Home Assistant API
 api:
@@ -119,7 +119,7 @@ media_player:
     name: Media Player
     dac_type: external
     i2s_dout_pin: 25
-    mode: mono
+    mode: stereo
     # on_play:
     #   output.turn_on: gpio_amp
     # on_idle:
@@ -130,7 +130,7 @@ speaker:
     id: speaker_out
     dac_type: external
     i2s_dout_pin: 25
-    mode: mono
+    mode: stereo
 
 # AC101 (I2C)
 i2c:
