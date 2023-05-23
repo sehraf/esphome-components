@@ -107,8 +107,7 @@ protected:
   // Set speaker volume.
   // @param volume   Target volume, [63..0] for [0..-43.5] [dB], in increments
   // of 2.
-  // @return True on success, false on failure.
-  bool SetVolumeSpeaker(uint8_t volume);
+  void SetVolumeSpeaker(uint8_t volume);
 
   // Get headphone volume.
   // @return Headphone volume, [63..0] for [0..-62] [dB]
@@ -116,46 +115,39 @@ protected:
 
   // Set headphone volume
   // @param volume   Target volume, [63..0] for [0..-62] [dB]
-  // @return True on success, false on failure.
-  bool SetVolumeHeadphone(uint8_t volume);
+  void SetVolumeHeadphone(uint8_t volume);
 
   // Configure I2S samplerate.
   // @param rate   Samplerate.
-  // @return True on success, false on failure.
-  bool SetI2sSampleRate(I2sSampleRate_t rate);
+  void SetI2sSampleRate(I2sSampleRate_t rate);
 
   // Configure I2S mode (master/slave).
   // @param mode   Mode.
-  // @return True on success, false on failure.
-  bool SetI2sMode(I2sMode_t mode);
+  void SetI2sMode(I2sMode_t mode);
 
   // Configure I2S word size (8/16/20/24 bits).
   // @param size   Word size.
-  // @return True on success, false on failure.
-  bool SetI2sWordSize(I2sWordSize_t size);
+  void SetI2sWordSize(I2sWordSize_t size);
 
   // Configure I2S format (I2S/Left/Right/Dsp).
   // @param format   I2S format.
-  // @return True on success, false on failure.
-  bool SetI2sFormat(I2sFormat_t format);
+  void SetI2sFormat(I2sFormat_t format);
 
   // Configure I2S clock.
   // @param bitClockDiv   I2S1CLK/BCLK1 ratio.
   // @param bitClockInv   I2S1 BCLK Polarity.
   // @param lrClockDiv    BCLK1/LRCK ratio.
   // @param lrClockInv    I2S1 LRCK Polarity.
-  // @return True on success, false on failure.
-  bool SetI2sClock(I2sBitClockDiv_t bitClockDiv, bool bitClockInv,
+  void SetI2sClock(I2sBitClockDiv_t bitClockDiv, bool bitClockInv,
                    I2sLrClockDiv_t lrClockDiv, bool lrClockInv);
 
   // Configure the mode (Adc/Dac/Adc+Dac/Line)
   // @param mode    Operating mode.
-  // @return True on success, false on failure.
-  bool SetMode(Mode_t mode);
+  void SetMode(Mode_t mode);
 
 private:
   bool WriteReg(uint8_t reg, uint16_t val);
-  uint16_t ReadReg(uint8_t reg);
+  bool ReadReg(uint8_t reg, uint16_t *val);
 };
 
 } // namespace ac101
