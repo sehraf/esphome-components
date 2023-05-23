@@ -93,13 +93,7 @@ binary_sensor:
 # voice assistant
 voice_assistant:
   microphone: mic_id
-  on_tts_end:
-    - media_player.play_media: !lambda return x;
-  on_end:
-    - delay: 1s
-    - wait_until:
-        not:
-          media_player.is_playing: media_out
+  speaker: speaker_out
 
 # I2S Audio
 i2s_audio:
