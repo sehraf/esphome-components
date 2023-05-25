@@ -9,6 +9,10 @@ substitutions:
   KEY5: "18" # do not use on A1S V2.3 with initial pinout -> I2C ES8388
   KEY6: "5"  # do not use on A1S V2.3 with initial pinout -> I2S
 
+  # Audiokit LEDs
+  LED_D4: "22"
+  LED_D5: ${KEY3}
+
 esp32:
   board: esp32dev
 
@@ -26,6 +30,7 @@ external_components:
     type: git
     url: https://github.com/sehraf/esphome-components
     ref: main
+  components: [ac101]
   refresh: 1s
 
 # Enable logging
@@ -49,6 +54,11 @@ wifi:
     password: "..."
 
 captive_portal:
+
+status_led:
+  pin:
+    number: ${LED_D5}
+    inverted: true
 
 # buttons
 binary_sensor:
