@@ -4,6 +4,7 @@ My collection of custom components for ESPHome
 ## AC101
 Based on https://github.com/Yveaux/AC101  
 Headphone output is working, tested with `media_player` and `speaker`.
+Microphone is working as well!
 
 
 ## Notes
