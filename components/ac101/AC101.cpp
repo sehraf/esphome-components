@@ -60,6 +60,9 @@ void AC101::setup() {
     uint16_t val;
     AC101_READ_REG(AC101_CHIP_AUDIO_RS, &val);
     if (val != 0x0101) {
+      ESP_LOGE(TAG,
+               "failed to reset AC101 (CHIP_AUDIO_RST=0x%04x, expected 0x0101)",
+               val);
       this->mark_failed();
       return;
     }
@@ -131,7 +134,7 @@ void AC101::SetVolumeSpeaker(uint8_t volume) {
 
 uint8_t AC101::GetVolumeHeadphone() {
   uint16_t val;
-  // can't use macro here
+  // can't use macro here due to return value
   if (!(this->ReadReg(AC101_HPOUT_CTRL, &val))) {
     this->mark_failed();
     return 0;
