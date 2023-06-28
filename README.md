@@ -7,13 +7,13 @@ Headphone output is working, tested with `media_player` and `speaker`.
 Microphone is working as well!
 
 ### Important note for ESP32 AudioKit users
-The AudioKit comes in three different flavours, please verify that it actually _has_ a AC101.
+The AudioKit comes in three different flavours, please verify that it actually _has_ an AC101.
 The AC101 uses I²C address `0x1A` while the ES3833 uses `0x10`, so ESPHome should show this
 ```
 [19:37:27][I][i2c.arduino:069]: Results from i2c bus scan:
 [19:37:27][I][i2c.arduino:075]: Found i2c device at address 0x1A
 ```
-If you see `address 0x10` instead, your board is uses an ES3833.
+If you see `address 0x10` instead, your board uses an ES3833. Also _different PINs_ are used!
 
 ## Notes
 ### Stream audio to speaker component
