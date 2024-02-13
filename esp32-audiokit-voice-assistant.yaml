@@ -20,10 +20,10 @@ esphome:
   name: esp32-audiokit-voice-assistant
   min_version: 2023.5.0
 
-  # amplifier is not required for headphones
-  # on_boot:
-  #   then:
-  #     - output.turn_on: gpio_amp
+  # enable amplifier
+  on_boot:
+    then:
+      - switch.turn_on: gpio_amp
 
 external_components:
   source:
@@ -57,8 +57,9 @@ captive_portal:
 
 status_led:
   pin:
-    number: ${LED_D5}
+    number: ${LED_D4}
     inverted: true
+    allow_other_uses: true
 
 # buttons
 binary_sensor:
@@ -75,6 +76,7 @@ binary_sensor:
       number: ${KEY3}
       inverted: true
       mode: INPUT_PULLUP
+      allow_other_uses: true
     name: Volume Up
     on_click:
       - media_player.volume_up: media_out
@@ -99,6 +101,13 @@ binary_sensor:
     name: Web Radio
     on_click:
       - media_player.play_media: http://listener3.mp3.tb-group.fm/hb.mp3
+  - platform: gpio
+    pin:
+      number: GPIO39
+      inverted: true
+      mode:
+        input: true
+    name: "Jack Status"
 
 # voice assistant
 voice_assistant:
@@ -116,25 +125,30 @@ microphone:
     i2s_din_pin: 35
     pdm: false
     id: mic_id
+    bits_per_sample: 16bit
 
 media_player:
   - platform: i2s_audio
     id: media_out
     name: Media Player
     dac_type: external
-    i2s_dout_pin: 25
+    i2s_dout_pin:
+      number: 25
+      allow_other_uses: true
     mode: stereo
     # on_play:
-    #   output.turn_on: gpio_amp
+    #   switch.turn_on: gpio_amp
     # on_idle:
-    #   output.turn_off: gpio_amp
+    #   switch.turn_off: gpio_amp
 
 speaker:
   - platform: i2s_audio
     id: speaker_out
     dac_type: external
-    i2s_dout_pin: 25
-    mode: stereo
+    i2s_dout_pin:
+      number: 25
+      allow_other_uses: true
+    mode: mono
 
 # AC101 (I2C)
 i2c:
@@ -146,7 +160,31 @@ ac101:
   # address: 0x1a
 
 # Amplifier
-output:
+switch:
   - platform: gpio
     pin: 21
+    name: "AMP Switch"
     id: gpio_amp
+    restore_mode: ALWAYS_ON
+
+light:
+  - platform: binary
+    name: "Test LED 1"
+    output: light_output_1
+  - platform: binary
+    name: "Test LED 2"
+    output: light_output_2
+
+output:
+  - id: light_output_1
+    platform: gpio
+    pin:
+      number: ${LED_D4}
+      inverted: true
+      allow_other_uses: true
+  - id: light_output_2
+    platform: gpio
+    pin:
+      number: ${LED_D5}
+      inverted: true
+      allow_other_uses: true
