@@ -23,36 +23,23 @@
 
 #pragma once
 
-#include "esphome/components/i2c/i2c.h"
 #include "esphome/core/component.h"
+#include "esphome/components/audio_dac/audio_dac.h"
+#include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
 namespace ac101 {
-
-enum I2sSampleRate_t {
-  SAMPLE_RATE_8000 = 0x0000,
-  SAMPLE_RATE_11052 = 0x1000,
-  SAMPLE_RATE_12000 = 0x2000,
-  SAMPLE_RATE_16000 = 0x3000,
-  SAMPLE_RATE_22050 = 0x4000,
-  SAMPLE_RATE_24000 = 0x5000,
-  SAMPLE_RATE_32000 = 0x6000,
-  SAMPLE_RATE_44100 = 0x7000,
-  SAMPLE_RATE_48000 = 0x8000,
-  SAMPLE_RATE_96000 = 0x9000,
-  SAMPLE_RATE_192000 = 0xa000,
-};
 
 enum I2sMode_t {
   MODE_MASTER = 0x00,
   MODE_SLAVE = 0x01,
 };
 
-enum I2sWordSize_t {
-  WORD_SIZE_8_BITS = 0x00,
-  WORD_SIZE_16_BITS = 0x01,
-  WORD_SIZE_20_BITS = 0x02,
-  WORD_SIZE_24_BITS = 0x03,
+enum AC101Resolution : uint8_t {
+  AC101_RESOLUTION_8_BITS = 8,
+  AC101_RESOLUTION_16_BITS = 16, // little endian
+  AC101_RESOLUTION_20_BITS = 32,
+  AC101_RESOLUTION_24_BITS = 24,
 };
 
 enum I2sFormat_t {
@@ -89,65 +76,123 @@ enum I2sLrClockDiv_t {
 
 enum Mode_t { MODE_ADC, MODE_DAC, MODE_ADC_DAC, MODE_LINE };
 
-class AC101 : public Component, public i2c::I2CDevice {
+class AC101 : public audio_dac::AudioDac,
+              public Component,
+              public i2c::I2CDevice {
 public:
   AC101() = default;
 
+  /////////////////////////
+  // Component overrides //
+  /////////////////////////
   void setup() override;
-
   void dump_config() override;
+  float get_setup_priority() const override { return setup_priority::LATE; }
 
-  float get_setup_priority() const override { return setup_priority::LATE - 1; }
+  ////////////////////////
+  // AudioDac overrides //
+  ////////////////////////
+
+  /// @brief Writes the volume out to the DAC
+  /// @param volume floating point between 0.0 and 1.0
+  /// @return True if successful and false otherwise
+  bool set_volume(float volume) override;
+
+  /// @brief Gets the current volume out from the DAC
+  /// @return floating point between 0.0 and 1.0
+  float volume() override;
+
+  /// @brief Disables mute for audio out
+  /// @return True if successful and false otherwise
+  bool set_mute_off() override { return this->set_mute_state_(false); }
+
+  /// @brief Enables mute for audio out
+  /// @return True if successful and false otherwise
+  bool set_mute_on() override { return this->set_mute_state_(true); }
+
+  bool is_muted() override { return this->is_muted_; }
+
+  //////////////////////////////////
+  // AC101 configuration setters //
+  //////////////////////////////////
+  // void set_use_mclk(bool use_mclk) { this->use_mclk_ = use_mclk; }
+  void set_bits_per_sample(AC101Resolution resolution) {
+    this->resolution_ = resolution;
+  }
+  void set_sample_frequency(uint32_t sample_frequency) {
+    this->sample_frequency_ = sample_frequency;
+  }
+
+  // void set_use_mic(bool use_mic) { this->use_mic_ = use_mic; }
+  // void set_mic_gain(ES8311MicGain mic_gain) { this->mic_gain_ = mic_gain; }
 
 protected:
-  // Get speaker volume.
-  // @return Speaker volume, [63..0] for [0..-43.5] [dB], in increments of 2.
+  /// @brief Get speaker volume.
+  /// @return Speaker volume, [63..0] for [0..-43.5] [dB], in increments of 2.
   uint8_t GetVolumeSpeaker();
 
-  // Set speaker volume.
-  // @param volume   Target volume, [63..0] for [0..-43.5] [dB], in increments
-  // of 2.
+  /// @brief Set speaker volume.
+  /// @param volume Target volume, [63..0] for [0..-43.5] [dB], in increments
+  /// of 2.
   void SetVolumeSpeaker(uint8_t volume);
 
-  // Get headphone volume.
-  // @return Headphone volume, [63..0] for [0..-62] [dB]
+  /// @brief Get headphone volume.
+  /// @return Headphone volume, [63..0] for [0..-62] [dB]
   uint8_t GetVolumeHeadphone();
 
-  // Set headphone volume
-  // @param volume   Target volume, [63..0] for [0..-62] [dB]
+  /// @brief Set headphone volume
+  /// @param volume Target volume, [63..0] for [0..-62] [dB]
   void SetVolumeHeadphone(uint8_t volume);
 
-  // Configure I2S samplerate.
-  // @param rate   Samplerate.
-  void SetI2sSampleRate(I2sSampleRate_t rate);
+  /// @brief Configure I2S samplerate.
+  /// @param rate Samplerate in Hz.
+  void SetI2sSampleRate(uint32_t rate);
 
-  // Configure I2S mode (master/slave).
-  // @param mode   Mode.
+  /// @brief Configure I2S mode (master/slave).
+  /// @param mode Mode.
   void SetI2sMode(I2sMode_t mode);
 
-  // Configure I2S word size (8/16/20/24 bits).
-  // @param size   Word size.
-  void SetI2sWordSize(I2sWordSize_t size);
+  /// @brief Configure I2S word size (8/16/20/24 bits).
+  /// @param size Word size.
+  void SetI2sWordSize(AC101Resolution size);
 
-  // Configure I2S format (I2S/Left/Right/Dsp).
-  // @param format   I2S format.
+  /// @brief Configure I2S format (I2S/Left/Right/Dsp).
+  /// @param format I2S format.
   void SetI2sFormat(I2sFormat_t format);
 
-  // Configure I2S clock.
-  // @param bitClockDiv   I2S1CLK/BCLK1 ratio.
-  // @param bitClockInv   I2S1 BCLK Polarity.
-  // @param lrClockDiv    BCLK1/LRCK ratio.
-  // @param lrClockInv    I2S1 LRCK Polarity.
+  /// @brief Configure I2S clock.
+  /// @param bitClockDiv   I2S1CLK/BCLK1 ratio.
+  /// @param bitClockInv   I2S1 BCLK Polarity.
+  /// @param lrClockDiv    BCLK1/LRCK ratio.
+  /// @param lrClockInv    I2S1 LRCK Polarity.
   void SetI2sClock(I2sBitClockDiv_t bitClockDiv, bool bitClockInv,
                    I2sLrClockDiv_t lrClockDiv, bool lrClockInv);
 
-  // Configure the mode (Adc/Dac/Adc+Dac/Line)
+  // @brief Configure the mode (Adc/Dac/Adc+Dac/Line)
   // @param mode    Operating mode.
   void SetMode(Mode_t mode);
+
+  /// @brief Mutes or unmute the DAC audio out
+  /// @param mute_state True to mute, false to unmute
+  /// @return
+  bool set_mute_state_(bool mute_state);
+
+  /// @brief Computes the register value for the configured sample rate
+  /// @param sample_frequency frequency for both audio in and audio out
+  /// @return register value
+  static uint16_t calculate_sample_rate_value(uint32_t sample_frequency);
+
+  /// @brief Computes the bits for the register for the configured resolution (bits per sample)
+  /// @param resolution bits per sample enum for both audio in and audio out
+  /// @return bit value
+  static uint8_t calculate_resolution_value(AC101Resolution resolution);
 
 private:
   bool WriteReg(uint8_t reg, uint16_t val);
   bool ReadReg(uint8_t reg, uint16_t *val);
+
+  AC101Resolution resolution_;
+  uint32_t sample_frequency_; // in Hz
 };
 
 } // namespace ac101
