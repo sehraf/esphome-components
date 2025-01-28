@@ -309,10 +309,9 @@ void AC101::dump_config() {
   }
 #endif
 }
+#undef ARRAY_SIZE
 
 bool AC101::set_volume(float volume) {
-  ESP_LOGE(TAG, "set_volume");
-
   volume = clamp(volume, 0.0f, 1.0f);
   uint8_t value = remap<uint8_t, float>(volume, 0.0f, 1.0f, 0, 63);
 
@@ -324,15 +323,11 @@ bool AC101::set_volume(float volume) {
 }
 
 float AC101::volume() {
-  ESP_LOGE(TAG, "volume");
-
   uint8_t value = GetVolumeHeadphone();
   return remap<float, uint8_t>(value, 0, 63, 0.0f, 1.0f);
 }
 
 bool AC101::set_mute_state_(bool mute_state) {
-  ESP_LOGE(TAG, "set_mute_state_");
-
   this->is_muted_ = mute_state;
   uint16_t val, BITS;
 
