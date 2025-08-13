@@ -28,8 +28,7 @@
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/core/component.h"
 
-namespace esphome {
-namespace ac101 {
+namespace esphome::ac101 {
 
 static const char *const TAG = "AC101";
 
@@ -238,5 +237,4 @@ void AC101::dump_config() {
 #endif
 }
 
-} // namespace ac101
-} // namespace esphome
+} // namespace esphome::ac101

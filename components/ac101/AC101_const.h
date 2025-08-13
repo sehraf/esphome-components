@@ -2,8 +2,7 @@
 
 #include "AC101.h"
 
-namespace esphome {
-namespace ac101 {
+namespace esphome::ac101 {
 
 #define AC101_ADDR 0x1A // Device address
 
@@ -80,5 +79,4 @@ static const uint8_t AC101_REGS[] = {
     AC101_AC_DAC_DAPHGOPA,  AC101_AC_DAC_DAPLGOPA,  AC101_AC_DAC_DAPOPT,
     AC101_DAC_DAP_ENA};
 
-} // namespace ac101
-} // namespace esphome
+} // namespace esphome::ac101

@@ -26,8 +26,7 @@
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/core/component.h"
 
-namespace esphome {
-namespace ac101 {
+namespace esphome::ac101 {
 
 enum I2sSampleRate_t {
   SAMPLE_RATE_8000 = 0x0000,
@@ -150,5 +149,4 @@ private:
   bool ReadReg(uint8_t reg, uint16_t *val);
 };
 
-} // namespace ac101
-} // namespace esphome
+} // namespace esphome::ac101
