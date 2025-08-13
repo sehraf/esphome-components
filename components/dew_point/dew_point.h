@@ -3,8 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 
-namespace esphome {
-namespace dew_point {
+namespace esphome::dew_point {
 
 /// This class implements calculation of dew point from temperature and relative humidity.
 class DewPointComponent : public sensor::Sensor, public Component {
@@ -40,5 +39,4 @@ class DewPointComponent : public sensor::Sensor, public Component {
   float humidity_{NAN};
 };
 
-}  // namespace dew_point
-}  // namespace esphome
+}  // namespace esphome::dew_point

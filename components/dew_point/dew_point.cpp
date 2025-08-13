@@ -1,8 +1,7 @@
 #include "esphome/core/log.h"
 #include "dew_point.h"
 
-namespace esphome {
-namespace dew_point {
+namespace esphome::dew_point {
 
 static const char *const TAG = "dew_point.sensor";
 
@@ -81,5 +80,4 @@ void DewPointComponent::loop() {
     );
   }
 
-}  // namespace dew_point
-}  // namespace esphome
+}  // namespace esphome::dew_point

@@ -18,7 +18,7 @@ DewPointComponent = dew_point_ns.class_(
 CONFIG_SCHEMA = (
     sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
-        icon="mdi:thermometer-alert",
+        icon="mdi:thermometer-water",
         accuracy_decimals=1,
         state_class=STATE_CLASS_MEASUREMENT,
     )
