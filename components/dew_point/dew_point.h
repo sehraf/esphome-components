@@ -30,7 +30,7 @@ class DewPointComponent : public sensor::Sensor, public Component {
     this->enable_loop();
   }
 
-  float calc_dew_point();
+  float calculateDewPointBolton();
 
   sensor::Sensor *temperature_sensor_{nullptr};
   sensor::Sensor *humidity_sensor_{nullptr};

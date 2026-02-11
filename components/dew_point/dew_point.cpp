@@ -67,7 +67,7 @@ void DewPointComponent::loop() {
 }
 
 // Calculate Dew Point using Bolton (1980) constants
-float calculateDewPointBolton() {
+float DewPointComponent::calculateDewPointBolton() {
   // Constants
   const float b = 17.67;
   const float c = 243.5;
