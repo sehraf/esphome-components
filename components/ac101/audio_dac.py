@@ -5,6 +5,7 @@ from esphome.components.audio_dac import AudioDac
 from esphome.const import CONF_BITS_PER_SAMPLE, CONF_ID, CONF_SAMPLE_RATE
 
 DEPENDENCIES = ["i2c"]
+CONF_AC101_ID = "ac101_id"
 
 ac101_ns = cg.esphome_ns.namespace("ac101")
 AC101 = ac101_ns.class_("AC101", AudioDac, cg.Component, i2c.I2CDevice)

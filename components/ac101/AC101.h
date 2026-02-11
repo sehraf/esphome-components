@@ -26,6 +26,9 @@
 #include "esphome/core/component.h"
 #include "esphome/components/audio_dac/audio_dac.h"
 #include "esphome/components/i2c/i2c.h"
+// #ifdef USE_SELECT
+// #include "esphome/components/select/select.h"
+// #endif
 
 namespace esphome {
 namespace ac101 {
@@ -79,6 +82,10 @@ enum Mode_t { MODE_ADC, MODE_DAC, MODE_ADC_DAC, MODE_LINE };
 class AC101 : public audio_dac::AudioDac,
               public Component,
               public i2c::I2CDevice {
+// #ifdef USE_SELECT
+//   SUB_SELECT(dac_output)
+//   SUB_SELECT(adc_input_mic)
+// #endif
 public:
   AC101() = default;
 
@@ -112,6 +119,12 @@ public:
 
   bool is_muted() override { return this->is_muted_; }
 
+  // optional<DacOutputLine> get_dac_power();
+  // optional<AdcInputMicLine> get_mic_input();
+
+  // bool set_dac_output(DacOutputLine line);
+  // bool set_adc_input_mic(AdcInputMicLine line);
+
   //////////////////////////////////
   // AC101 configuration setters //
   //////////////////////////////////
@@ -127,23 +140,6 @@ public:
   // void set_mic_gain(ES8311MicGain mic_gain) { this->mic_gain_ = mic_gain; }
 
 protected:
-  /// @brief Get speaker volume.
-  /// @return Speaker volume, [63..0] for [0..-43.5] [dB], in increments of 2.
-  uint8_t GetVolumeSpeaker();
-
-  /// @brief Set speaker volume.
-  /// @param volume Target volume, [63..0] for [0..-43.5] [dB], in increments
-  /// of 2.
-  void SetVolumeSpeaker(uint8_t volume);
-
-  /// @brief Get headphone volume.
-  /// @return Headphone volume, [63..0] for [0..-62] [dB]
-  uint8_t GetVolumeHeadphone();
-
-  /// @brief Set headphone volume
-  /// @param volume Target volume, [63..0] for [0..-62] [dB]
-  void SetVolumeHeadphone(uint8_t volume);
-
   /// @brief Configure I2S samplerate.
   /// @param rate Samplerate in Hz.
   void SetI2sSampleRate(uint32_t rate);
