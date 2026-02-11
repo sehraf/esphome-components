@@ -35,6 +35,8 @@ float DewPointComponent::get_setup_priority() const { return setup_priority::DAT
 
 void DewPointComponent::loop() {
   if (!this->next_update_) {
+    // We only want to update when we have new data, so disable the loop until we get a callback from one of the source sensors
+    this->disable_loop();
     return;
   }
   this->next_update_ = false;
@@ -56,7 +58,7 @@ void DewPointComponent::loop() {
   }
 
   // Calculate dew point
-  const float dew_point = calc_dew_point();
+  const float dew_point = calculateDewPointBolton();
 
   // Publish absolute humidity
   ESP_LOGD(TAG, "Publishing dew point %f ºC", dew_point);
@@ -64,20 +66,20 @@ void DewPointComponent::loop() {
   this->publish_state(dew_point);
 }
 
-  float DewPointComponent::calc_dew_point() {
-    const float hum_log = log(this->humidity_ / 100);
+// Calculate Dew Point using Bolton (1980) constants
+float calculateDewPointBolton() {
+  // Constants
+  const float b = 17.67;
+  const float c = 243.5;
 
-    return (
-      243.5 * (
-        hum_log + (
-          (17.67 * this->temperature_) / (243.5+this->temperature_)
-        )
-      ) / (
-        17.67 - hum_log - (
-          (17.67 * this->temperature_) / (243.5+this->temperature_)
-        )
-      )
-    );
-  }
+  const float humidity = this->humidity_;
+  const float celsius = this->temperature_;
+
+  // Intermediate gamma calculation
+  float gamma = logf(humidity / 100.0) + ((b * celsius) / (c + celsius));
+
+  float dewPoint = (c * gamma) / (b - gamma);
+  return dewPoint;
+}
 
 }  // namespace esphome::dew_point

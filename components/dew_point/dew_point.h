@@ -22,10 +22,12 @@ class DewPointComponent : public sensor::Sensor, public Component {
   void temperature_callback_(float state) {
     this->next_update_ = true;
     this->temperature_ = state;
+    this->enable_loop();
   }
   void humidity_callback_(float state) {
     this->next_update_ = true;
     this->humidity_ = state;
+    this->enable_loop();
   }
 
   float calc_dew_point();
